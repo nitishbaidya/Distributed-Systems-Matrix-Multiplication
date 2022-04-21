@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ECS796P - Distributed Systems</title>
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.css"/>
+    <!-- <style>
+      div
+      {
+      margin-left: -90px;
+      }
+      </style> -->
+  </head>
+  <body>
+    <div class="container" >
+      <h3 class="title">Matrix Multiplication using GRPC and REST</h3>
+      <hr />
+      <form
+        action="/multiply"
+        method="post"
+        enctype="multipart/form-data"
+        id="upload"
+      >
+        <div class="row" style="margin-top: 10px">
+          <div class="four columns">
+            <label for="A">Select 1st Matrix :</label>
+            <input type="file" name="A" id="A" />
+          </div>
+          <div class="four columns" style="margin-top: 10px">
+            <label for="B">Select 2nd Matrix :</label>
+            <input type="file" name="B" id="A" />
+          </div>
+          <div class="four columns" style="margin-top: 10px">
+            <label for="deadline">Deadline (ms):</label>
+            <input
+              type="number"
+              name="deadline"
+              id="deadline"
+              placeholder="50"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="button-primary"
+          style="margin-top: 20px"
+        >
+          Get The Result
+        </button>
+      </form>
+
+      <p class="error"></p>
+      <table class="matrix" style="margin-left: -70px;"></table>
+    </div>
+  </body>
+
+  <script>
+    (async () => {
+      document.querySelector("#deadline").value = "50";
+      const upload = document.querySelector("#upload");
+
+      upload.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const error = document.querySelector(".error");
+        error.innerHTML = "";
+
+        const response = await fetch(event.target.action, {
+          method: "POST",
+          headers: {},
+          body: new FormData(event.target),
+        });
+
+        const json = await response.json();
+
+        if (json.hasOwnProperty("error")) {
+          console.log("Error uploading: ", json.error);
+          error.innerHTML = json.error;
+          return;
+        }
+
+        const matrix = json;
+        const table = document.querySelector(".matrix");
+
+        let result = "";
+        for (let i = 0; i < matrix.length; i++) {
+          result += "<tr>";
+          for (let j = 0; j < matrix[i].length; j++) {
+            result += "<td>" + matrix[i][j] + "</td>";
+          }
+          result += "</tr>";
+        }
+        table.innerHTML = result;
+      });
+    })();
+  </script>
+</html>
